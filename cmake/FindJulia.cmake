@@ -46,9 +46,7 @@ MESSAGE(STATUS "Julia_VERSION_STRING: ${Julia_VERSION_STRING}")
 
 set(JULIA_HOME_NAME "Sys.BINDIR")
 if(${Julia_VERSION_STRING} VERSION_LESS "0.7.0")
-    set(JULIA_HOME_NAME "JULIA_HOME")
-else()
-    set(USING_LIBDL "using Libdl")
+    message(FATAL_ERROR "The Julia version ${Julia_VERSION_STRING} is too old and is no longer supported")
 endif()
 
 if(DEFINED ENV{JULIA_INCLUDE_DIRS})
@@ -56,14 +54,7 @@ if(DEFINED ENV{JULIA_INCLUDE_DIRS})
         CACHE STRING "Location of Julia include files")
 elseif(Julia_EXECUTABLE)
     execute_process(
-        COMMAND ${Julia_EXECUTABLE} --startup-file=no -E "julia_include_dir = joinpath(match(r\"(.*)(bin)\",${JULIA_HOME_NAME}).captures[1],\"include\",\"julia\")\n
-            if !isdir(julia_include_dir)  # then we're running directly from build\n
-            julia_base_dir_aux = splitdir(splitdir(${JULIA_HOME_NAME})[1])[1]  # useful for running-from-build\n
-            julia_include_dir = joinpath(julia_base_dir_aux, \"usr\", \"include\" )\n
-            julia_include_dir *= \";\" * joinpath(julia_base_dir_aux, \"src\", \"support\" )\n
-            julia_include_dir *= \";\" * joinpath(julia_base_dir_aux, \"src\" )\n
-            end\n
-            julia_include_dir"
+        COMMAND ${Julia_EXECUTABLE} --startup-file=no ${CMAKE_CURRENT_SOURCE_DIR}/julia_include_dir.jl
         OUTPUT_VARIABLE Julia_INCLUDE_DIRS
     )
 
@@ -87,7 +78,7 @@ endif()
 
 if(Julia_EXECUTABLE)
     execute_process(
-        COMMAND ${Julia_EXECUTABLE} --startup-file=no -E "${USING_LIBDL}\nabspath(Libdl.dlpath((ccall(:jl_is_debugbuild, Cint, ()) != 0) ? \"libjulia-debug\" : \"libjulia\"))"
+        COMMAND ${Julia_EXECUTABLE} --startup-file=no ${CMAKE_CURRENT_SOURCE_DIR}/julia_library.jl
         OUTPUT_VARIABLE Julia_LIBRARY
     )
 
