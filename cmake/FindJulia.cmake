@@ -54,7 +54,7 @@ if(DEFINED ENV{JULIA_INCLUDE_DIRS})
         CACHE STRING "Location of Julia include files")
 elseif(Julia_EXECUTABLE)
     execute_process(
-        COMMAND ${Julia_EXECUTABLE} --startup-file=no ${CMAKE_CURRENT_SOURCE_DIR}/julia_include_dir.jl
+        COMMAND ${Julia_EXECUTABLE} --startup-file=no ${CMAKE_CURRENT_SOURCE_DIR}/cmake/julia_include_dir.jl
         OUTPUT_VARIABLE Julia_INCLUDE_DIRS
     )
 
@@ -78,7 +78,7 @@ endif()
 
 if(Julia_EXECUTABLE)
     execute_process(
-        COMMAND ${Julia_EXECUTABLE} --startup-file=no ${CMAKE_CURRENT_SOURCE_DIR}/julia_library.jl
+        COMMAND ${Julia_EXECUTABLE} --startup-file=no ${CMAKE_CURRENT_SOURCE_DIR}/cmake/julia_library.jl
         OUTPUT_VARIABLE Julia_LIBRARY
     )
 
